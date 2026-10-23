@@ -395,7 +395,6 @@ function buildPetMenuTemplate() {
     { label: '고정 메시지 설정', click: () => createMessageWindow() },
     { label: '커스텀 리마인더 설정', click: () => createReminderWindow() },
     { label: '캐릭터 크기 조정', click: () => createSizeWindow() },
-    { label: '캐릭터 위치 되돌리기', click: () => recenterCharacter() },
     { type: 'separator' },
     { label: '후기 보내기', click: () => createReviewWindow() },
     { label: '기능 제안하기', click: () => createFeatureWindow() },
@@ -405,21 +404,6 @@ function buildPetMenuTemplate() {
     { type: 'separator' },
     { label: '종료', click: () => app.quit() },
   ];
-}
-
-// 모니터 연결 상태가 바뀌거나(듀얼 모니터 쓰다가 하나 뺌 등), 드래그 중 좌표가 어쩌다
-// 꼬여서 캐릭터가 "화면 어디에도 안 걸치는" 위치로 가버렸을 때 - 트레이/우클릭 메뉴에서
-// 언제든 눌러서 기본 위치(주 모니터 우측 하단)로 강제로 되돌릴 수 있게 하는 비상 탈출구예요.
-function recenterCharacter() {
-  if (!win || win.isDestroyed()) return;
-  const primary = screen.getPrimaryDisplay();
-  const { width, height } = primary.workAreaSize;
-  const bounds = win.getBounds();
-  const x = Math.round(primary.workArea.x + width - bounds.width - 40);
-  const y = Math.round(primary.workArea.y + height - bounds.height - 40);
-  win.setPosition(x, y);
-  currentPos = { x, y };
-  targetPos = { x, y };
 }
 
 function ensureTray() {

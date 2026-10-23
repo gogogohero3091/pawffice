@@ -534,7 +534,13 @@ document.addEventListener('mousemove', (e) => {
   setHeadHover(isInsideHeadRegion(e.clientX, e.clientY));
 });
 
+// (2026-10-23 수정) 우클릭 메뉴 추가하면서 생긴 버그: 여기서 버튼 종류를 안 가려서
+// 우클릭의 mousedown도 드래그 시작으로 잡혔었어요. 우클릭하면 바로 OS 메뉴가 뜨면서
+// 페이지가 mouseup을 못 받아서(메뉴가 가로채감) dragEnd()가 영영 안 불리고, 캐릭터가
+// 커서를 계속 쫓아다니다가 아무 데나 다시 클릭해야만(그 클릭의 mouseup에서) 멈추는
+// 문제였어요. 왼쪽 버튼(e.button === 0)일 때만 드래그를 시작하도록 고쳤어요.
 document.addEventListener('mousedown', (e) => {
+  if (e.button !== 0) return;
   if (!isInsideSilhouette(e.clientX, e.clientY)) return;
   dragging = true;
   window.petAPI && window.petAPI.dragStart({ x: e.clientX, y: e.clientY });
@@ -545,6 +551,11 @@ document.addEventListener('mousedown', (e) => {
 document.addEventListener('contextmenu', (e) => {
   if (!isInsideSilhouette(e.clientX, e.clientY)) return;
   e.preventDefault();
+  // 혹시라도(다른 OS/입력 장치 등) 드래그가 걸린 채로 들어왔으면 메뉴 뜨기 전에 확실히 풀어줌.
+  if (dragging) {
+    dragging = false;
+    window.petAPI && window.petAPI.dragEnd();
+  }
   window.petAPI && window.petAPI.showContextMenu();
 });
 
