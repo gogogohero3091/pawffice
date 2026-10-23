@@ -51,7 +51,7 @@
       "extendInfo": {
         "LSUIElement": true
       },
-      "x64ArchFiles": "Contents/Resources/app.asar.unpacked/native/scrollwatch"
+      "x64ArchFiles": "{Contents/Resources/app.asar.unpacked/native/scrollwatch,Contents/Resources/app.asar.unpacked/node_modules/uiohook-napi/prebuilds/**}"
     },
     "publish": {
       "provider": "github",
