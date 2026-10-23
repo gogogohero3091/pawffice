@@ -1,6 +1,6 @@
 {
   "name": "mypet-desktop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "내 반려동물이 화면 위에 사는 데스크탑 펫 앱",
   "main": "main.js",
