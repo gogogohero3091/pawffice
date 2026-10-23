@@ -40,8 +40,15 @@ https://developer.apple.com/account → Membership(또는 "Membership details") 
 ```
 cd ~/Documents/mypet-desktop
 
-# 먼저 scrollwatch 바이너리가 빌드돼 있는지 확인(없으면):
-swiftc -O native/scrollwatch.swift -o native/scrollwatch
+# 먼저 scrollwatch 바이너리가 빌드돼 있는지 확인(없으면). (2026-10-23) 이제 universal
+# (Intel+Apple Silicon) 빌드를 하기 때문에, 이 바이너리도 두 아키텍처 다 들어간
+# "fat" 바이너리로 만들어야 해요 - 그냥 swiftc만 돌리면 지금 맥의 아키텍처(arm64)
+# 하나만 들어가서 인텔 맥에서 이 기능만 조용히 안 먹혀요(앱 자체는 켜짐):
+swiftc -O -target arm64-apple-macosx11.0 native/scrollwatch.swift -o native/scrollwatch-arm64
+swiftc -O -target x86_64-apple-macosx11.0 native/scrollwatch.swift -o native/scrollwatch-x86_64
+lipo -create native/scrollwatch-arm64 native/scrollwatch-x86_64 -output native/scrollwatch
+rm native/scrollwatch-arm64 native/scrollwatch-x86_64
+# 확인: file native/scrollwatch 했을 때 "Mach-O universal binary with 2 architectures" 나와야 함
 
 # 서명 없이 구조만 먼저 테스트해보고 싶으면:
 npm run pack
