@@ -1,0 +1,52 @@
+{
+  "name": "mypet-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "내 반려동물이 화면 위에 사는 데스크탑 펫 앱",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "generate": "node generate-character.js",
+    "detect-eyes": "node detect-eyes.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "release": "electron-builder --publish always"
+  },
+  "devDependencies": {
+    "@electron/notarize": "^3.1.1",
+    "electron": "^33.0.0",
+    "electron-builder": "^26.15.3",
+    "sharp": "^0.33.5"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9",
+    "uiohook-napi": "^1.5.4"
+  },
+  "build": {
+    "appId": "com.pawffice.app",
+    "productName": "Pawffice",
+    "asarUnpack": [
+      "native/scrollwatch"
+    ],
+    "afterSign": "build/notarize.js",
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "build/icon.icns",
+      "category": "public.app-category.utilities",
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "extendInfo": {
+        "LSUIElement": true
+      }
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "gogogohero3091",
+      "repo": "pawffice"
+    }
+  }
+}

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>Pawffice 라이선스</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #faf7f2;
+    font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    color: #3a332c;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .wrap {
+    padding: 26px 24px 22px;
+    box-sizing: border-box;
+  }
+  h1 {
+    font-size: 17px;
+    margin: 0 0 4px;
+  }
+  p.sub {
+    font-size: 12px;
+    color: #8a8074;
+    margin: 0 0 18px;
+    line-height: 1.6;
+  }
+  input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 14px;
+    font-family: inherit;
+    padding: 11px 12px;
+    border: 1.5px solid #e7e0d4;
+    border-radius: 10px;
+    outline: none;
+  }
+  input[type="text"]:focus {
+    border-color: #d99a5b;
+  }
+  .error {
+    min-height: 32px;
+    font-size: 12px;
+    color: #c2543a;
+    margin: 8px 2px 4px;
+    line-height: 1.5;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  .row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  button {
+    flex: 1;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  #activateBtn {
+    background: #d99a5b;
+    color: #fff;
+  }
+  #activateBtn:disabled {
+    background: #e7cba3;
+    cursor: default;
+  }
+  #buyBtn {
+    background: #efe9dd;
+    color: #3a332c;
+  }
+  .divider {
+    border: none;
+    border-top: 1px solid #ece5d8;
+    margin: 20px 0 16px;
+  }
+  .hint {
+    font-size: 11px;
+    color: #a89e8f;
+    text-align: center;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>🐾 Pawffice 라이선스</h1>
+    <p class="sub">구매하신 이메일로 받은 라이선스 키를 입력해주세요.</p>
+    <input type="text" id="keyInput" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" autofocus />
+    <div class="error" id="errorMsg"></div>
+    <div class="row">
+      <button id="activateBtn">활성화</button>
+    </div>
+    <hr class="divider" />
+    <p class="hint">아직 구매 전이신가요?</p>
+    <div class="row">
+      <button id="buyBtn">구매 페이지 열기</button>
+    </div>
+  </div>
+  <script>
+    const keyInput = document.getElementById('keyInput');
+    const activateBtn = document.getElementById('activateBtn');
+    const buyBtn = document.getElementById('buyBtn');
+    const errorMsg = document.getElementById('errorMsg');
+
+    async function tryActivate() {
+      const key = keyInput.value.trim();
+      if (!key) {
+        errorMsg.textContent = '라이선스 키를 입력해주세요.';
+        return;
+      }
+      activateBtn.disabled = true;
+      activateBtn.textContent = '확인 중...';
+      errorMsg.textContent = '';
+      const result = await window.licenseAPI.activate(key);
+      if (!result.ok) {
+        errorMsg.textContent = result.error || '활성화에 실패했어요.';
+        activateBtn.disabled = false;
+        activateBtn.textContent = '활성화';
+      }
+      // 성공하면 메인 프로세스가 이 창을 바로 닫아줘요.
+    }
+
+    activateBtn.addEventListener('click', tryActivate);
+    keyInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') tryActivate();
+    });
+    buyBtn.addEventListener('click', () => {
+      window.licenseAPI.openPurchasePage();
+    });
+  </script>
+</body>
+</html>

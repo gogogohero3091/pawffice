@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>캐릭터 크기 조정</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #faf7f2;
+    font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    color: #3a332c;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .wrap { padding: 24px 22px 20px; box-sizing: border-box; }
+  h1 { font-size: 16px; margin: 0 0 4px; }
+  p.sub { font-size: 12px; color: #8a8074; margin: 0 0 20px; line-height: 1.5; }
+  .pct { text-align: center; font-size: 28px; font-weight: 700; color: #d99a5b; margin-bottom: 10px; }
+  input[type="range"] { width: 100%; accent-color: #d99a5b; }
+  .scale-labels { display: flex; justify-content: space-between; font-size: 11px; color: #a89e8f; margin-top: 4px; }
+  .row { display: flex; gap: 8px; margin-top: 22px; }
+  button {
+    flex: 1; padding: 11px; font-size: 14px; font-weight: 600; border: none;
+    border-radius: 10px; cursor: pointer; font-family: inherit;
+  }
+  #saveBtn { background: #d99a5b; color: #fff; }
+  #closeBtn { background: #efe9dd; color: #3a332c; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>📏 캐릭터 크기 조정</h1>
+    <p class="sub">화면에 보이는 펫 크기를 바꿀 수 있어. 저장하면 바로 적용돼.</p>
+    <div class="pct" id="pctLabel">100%</div>
+    <input type="range" id="scaleSlider" min="50" max="130" step="5" value="100" />
+    <div class="scale-labels"><span>50% (작게)</span><span>130% (크게)</span></div>
+    <div class="row">
+      <button id="saveBtn">적용하기</button>
+      <button id="closeBtn">닫기</button>
+    </div>
+  </div>
+  <script>
+    const slider = document.getElementById('scaleSlider');
+    const pctLabel = document.getElementById('pctLabel');
+    const saveBtn = document.getElementById('saveBtn');
+    const closeBtn = document.getElementById('closeBtn');
+
+    const initialPct = Math.round((window.sizeAPI.currentScale || 1.0) * 100);
+    slider.value = initialPct;
+    pctLabel.textContent = initialPct + '%';
+
+    slider.addEventListener('input', () => {
+      pctLabel.textContent = slider.value + '%';
+    });
+
+    saveBtn.addEventListener('click', () => {
+      const scale = Number(slider.value) / 100;
+      window.sizeAPI.submit(scale);
+    });
+    closeBtn.addEventListener('click', () => window.close());
+  </script>
+</body>
+</html>

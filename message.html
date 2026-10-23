@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>고정 메시지</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #faf7f2;
+    font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    color: #3a332c;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .wrap {
+    padding: 24px 22px 20px;
+    box-sizing: border-box;
+  }
+  h1 {
+    font-size: 16px;
+    margin: 0 0 4px;
+  }
+  p.sub {
+    font-size: 12px;
+    color: #8a8074;
+    margin: 0 0 16px;
+    line-height: 1.5;
+  }
+  textarea {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 14px;
+    font-family: inherit;
+    padding: 10px 12px;
+    border: 1.5px solid #e7e0d4;
+    border-radius: 10px;
+    outline: none;
+    resize: none;
+    height: 64px;
+  }
+  textarea:focus {
+    border-color: #d99a5b;
+  }
+  .count {
+    text-align: right;
+    font-size: 11px;
+    color: #a89e8f;
+    margin: 4px 2px 16px;
+  }
+  .row {
+    display: flex;
+    gap: 8px;
+  }
+  button {
+    flex: 1;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  #pin-btn {
+    background: #d99a5b;
+    color: #fff;
+  }
+  #clear-btn {
+    background: #efe9dd;
+    color: #6b6154;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>화면에 고정할 메시지</h1>
+    <p class="sub">캐릭터 머리 위에 말풍선으로 계속 떠 있어요. 비워두고 저장하면 없어져요.</p>
+    <textarea id="msg-input" maxlength="40" placeholder="예: 오늘도 화이팅!" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+    <div class="count"><span id="count">0</span>/40</div>
+    <div class="row">
+      <button id="clear-btn" type="button">메시지 지우기</button>
+      <button id="pin-btn" type="button">고정하기</button>
+    </div>
+  </div>
+  <script src="message-renderer.js"></script>
+</body>
+</html>

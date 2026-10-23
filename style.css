@@ -1,0 +1,17 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 260px;
+  height: 370px;
+  background: transparent;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#stage {
+  display: block;
+  width: 260px;
+  height: 370px;
+  background: transparent;
+}

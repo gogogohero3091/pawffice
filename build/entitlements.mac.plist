@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  하드닝된 런타임(hardened runtime)에서 Electron + 네이티브 모듈(uiohook-napi)이 정상 동작하려면
+  필요한 예외 권한들이에요. 공증(notarization)을 받으려면 hardenedRuntime은 켜야 하는데,
+  그냥 켜기만 하면 Electron 자체(V8 JIT)도, uiohook-napi 같은 네이티브 애드온도 막혀서
+  이 예외들을 같이 선언해줘야 해요. Electron 공식 문서에서 권장하는 기본 세트 + 네이티브
+  모듈용 disable-library-validation을 추가함.
+-->
+<plist version="1.0">
+<dict>
+  <key>com.apple.security.cs.allow-jit</key>
+  <true/>
+  <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+  <true/>
+  <key>com.apple.security.cs.allow-dyld-environment-variables</key>
+  <true/>
+  <key>com.apple.security.cs.disable-library-validation</key>
+  <true/>
+</dict>
+</plist>

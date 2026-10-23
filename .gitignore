@@ -1,0 +1,22 @@
+node_modules/
+.env
+*.log
+dist/
+
+# OS
+.DS_Store
+
+# 작업 중 스크래치/백업 - 앱 소스 아님
+.claude_tmp/
+.claude_tmp*
+.claude_recheck*.png
+_preview_tmp/
+_to_delete/
+_vidcheck/
+*.bak_*
+*.bak
+
+# 마케팅/디자인 원본 - 앱 실행에 불필요, 용량만 큼
+메인이미지.png
+무제-1.png
+일러스트.ai

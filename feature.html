@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>기능 제안하기</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #faf7f2;
+    font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    color: #3a332c;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .wrap { padding: 24px 22px 20px; box-sizing: border-box; }
+  h1 { font-size: 16px; margin: 0 0 4px; }
+  p.sub { font-size: 12px; color: #8a8074; margin: 0 0 16px; line-height: 1.5; }
+  input[type="email"] {
+    width: 100%; box-sizing: border-box; font-size: 14px; font-family: inherit;
+    padding: 10px 12px; border: 1.5px solid #e7e0d4; border-radius: 10px;
+    outline: none; margin-bottom: 8px; -webkit-user-select: text; user-select: text;
+  }
+  input[type="email"]:focus { border-color: #d99a5b; }
+  textarea {
+    width: 100%; box-sizing: border-box; font-size: 14px; font-family: inherit;
+    padding: 10px 12px; border: 1.5px solid #e7e0d4; border-radius: 10px;
+    outline: none; resize: none; height: 90px; -webkit-user-select: text; user-select: text;
+  }
+  textarea:focus { border-color: #d99a5b; }
+  .error { min-height: 18px; font-size: 12px; color: #c2543a; margin: 8px 2px 0; line-height: 1.5; }
+  .row { display: flex; gap: 8px; margin-top: 12px; }
+  button {
+    flex: 1; padding: 11px; font-size: 14px; font-weight: 600; border: none;
+    border-radius: 10px; cursor: pointer; font-family: inherit;
+  }
+  #sendBtn { background: #d99a5b; color: #fff; }
+  #sendBtn:disabled { background: #e7cba3; cursor: default; }
+  #closeBtn { background: #efe9dd; color: #3a332c; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>💡 기능 제안하기</h1>
+    <p class="sub">이런 기능 있으면 좋겠다 싶은 거 자유롭게 써줘.</p>
+    <input type="email" id="emailInput" placeholder="이메일 (선택 - 답장 받고 싶으면)" />
+    <textarea id="suggestionText" placeholder="예: 강아지가 가끔 공을 물고 왔으면 좋겠어요" autofocus></textarea>
+    <div class="error" id="errorMsg"></div>
+    <div class="row">
+      <button id="sendBtn">보내기</button>
+      <button id="closeBtn">닫기</button>
+    </div>
+  </div>
+  <script>
+    const emailInput = document.getElementById('emailInput');
+    const suggestionText = document.getElementById('suggestionText');
+    const sendBtn = document.getElementById('sendBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    const errorMsg = document.getElementById('errorMsg');
+
+    async function send() {
+      const text = suggestionText.value.trim();
+      if (!text) {
+        errorMsg.textContent = '제안 내용을 입력해줘.';
+        return;
+      }
+      sendBtn.disabled = true;
+      sendBtn.textContent = '보내는 중...';
+      errorMsg.textContent = '';
+      const result = await window.featureAPI.submit({ text, email: emailInput.value.trim() });
+      if (!result.ok) {
+        errorMsg.textContent = result.error || '전송에 실패했어.';
+        sendBtn.disabled = false;
+        sendBtn.textContent = '보내기';
+        return;
+      }
+      document.querySelector('.wrap').innerHTML =
+        '<h1>✅ 제안 잘 받았어!</h1><p class="sub">읽어보고 반영할 수 있는 건 반영해볼게.</p>' +
+        '<div class="row"><button id="closeBtn2">닫기</button></div>';
+      document.getElementById('closeBtn2').addEventListener('click', () => window.close());
+    }
+
+    sendBtn.addEventListener('click', send);
+    closeBtn.addEventListener('click', () => window.close());
+  </script>
+</body>
+</html>

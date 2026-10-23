@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>후기 보내기</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #faf7f2;
+    font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    color: #3a332c;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .wrap { padding: 24px 22px 20px; box-sizing: border-box; }
+  h1 { font-size: 16px; margin: 0 0 4px; }
+  p.sub { font-size: 12px; color: #8a8074; margin: 0 0 16px; line-height: 1.5; }
+  textarea {
+    width: 100%; box-sizing: border-box; font-size: 14px; font-family: inherit;
+    padding: 10px 12px; border: 1.5px solid #e7e0d4; border-radius: 10px;
+    outline: none; resize: none; height: 110px; -webkit-user-select: text; user-select: text;
+  }
+  textarea:focus { border-color: #d99a5b; }
+  .error { min-height: 18px; font-size: 12px; color: #c2543a; margin: 8px 2px 0; line-height: 1.5; }
+  .row { display: flex; gap: 8px; margin-top: 12px; }
+  button {
+    flex: 1; padding: 11px; font-size: 14px; font-weight: 600; border: none;
+    border-radius: 10px; cursor: pointer; font-family: inherit;
+  }
+  #sendBtn { background: #d99a5b; color: #fff; }
+  #sendBtn:disabled { background: #e7cba3; cursor: default; }
+  #closeBtn { background: #efe9dd; color: #3a332c; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>💌 후기 보내기</h1>
+    <p class="sub">Pawffice 쓰면서 느낀 점 자유롭게 남겨줘. 개발자한테 바로 전달돼.</p>
+    <textarea id="reviewText" placeholder="예: 혼자 일할 때 덜 외로워요, 타이핑할 때 반응하는 게 귀여워요..." autofocus></textarea>
+    <div class="error" id="errorMsg"></div>
+    <div class="row">
+      <button id="sendBtn">보내기</button>
+      <button id="closeBtn">닫기</button>
+    </div>
+  </div>
+  <script>
+    const reviewText = document.getElementById('reviewText');
+    const sendBtn = document.getElementById('sendBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    const errorMsg = document.getElementById('errorMsg');
+
+    async function send() {
+      const text = reviewText.value.trim();
+      if (!text) {
+        errorMsg.textContent = '후기 내용을 입력해줘.';
+        return;
+      }
+      sendBtn.disabled = true;
+      sendBtn.textContent = '보내는 중...';
+      errorMsg.textContent = '';
+      const result = await window.reviewAPI.submit(text);
+      if (!result.ok) {
+        errorMsg.textContent = result.error || '전송에 실패했어.';
+        sendBtn.disabled = false;
+        sendBtn.textContent = '보내기';
+        return;
+      }
+      document.querySelector('.wrap').innerHTML =
+        '<h1>✅ 고마워!</h1><p class="sub">후기 잘 받았어. 소중하게 읽어볼게.</p>' +
+        '<div class="row"><button id="closeBtn2">닫기</button></div>';
+      document.getElementById('closeBtn2').addEventListener('click', () => window.close());
+    }
+
+    sendBtn.addEventListener('click', send);
+    closeBtn.addEventListener('click', () => window.close());
+  </script>
+</body>
+</html>

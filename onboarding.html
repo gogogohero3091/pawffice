@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>내 반려동물 설정</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #faf7f2;
+    font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    color: #3a332c;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  /* 견종이 22개라 2열로 쭉 나열하면 고정 창 높이를 훨씬 넘어가요(예전엔 이 부분이 그냥
+     grid였어서, 이름 입력/시작하기 버튼이 창 밖으로 밀려나 안 보이는 문제가 있었어요).
+     그래서 헤더/이름입력/버튼은 항상 고정해서 보이게 하고, 견종 그리드만 그 사이에서
+     스크롤되는 영역으로 분리했어요(flex 레이아웃). */
+  .wrap {
+    height: 100vh;
+    padding: 28px 26px 22px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+  h1 {
+    font-size: 18px;
+    margin: 0 0 4px;
+    flex: 0 0 auto;
+  }
+  p.sub {
+    font-size: 13px;
+    color: #8a8074;
+    margin: 0 0 14px;
+    flex: 0 0 auto;
+  }
+  .breed-scroll {
+    flex: 1 1 auto;
+    min-height: 0; /* flex 안에서 overflow가 제대로 동작하려면 필요 */
+    overflow-y: auto;
+    margin-bottom: 16px;
+    padding-right: 4px;
+  }
+  .breed-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  .breed-scroll::-webkit-scrollbar-thumb {
+    background: #e7e0d4;
+    border-radius: 3px;
+  }
+  #breed-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .breed-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 8px 10px;
+    border: 2px solid #e7e0d4;
+    border-radius: 14px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    color: #3a332c;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .breed-card img {
+    width: 84px;
+    height: 84px;
+    object-fit: contain;
+  }
+  .breed-card.selected {
+    border-color: #d99a5b;
+    background: #fff6ea;
+  }
+  .field {
+    margin-bottom: 22px;
+  }
+  .field label {
+    display: block;
+    font-size: 13px;
+    color: #6b6154;
+    margin-bottom: 6px;
+  }
+  .field input {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 15px;
+    padding: 10px 12px;
+    border: 1.5px solid #e7e0d4;
+    border-radius: 10px;
+    outline: none;
+    font-family: inherit;
+  }
+  .field input:focus {
+    border-color: #d99a5b;
+  }
+  .field {
+    flex: 0 0 auto;
+  }
+  button#start-btn {
+    flex: 0 0 auto;
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    background: #d99a5b;
+    color: #fff;
+    cursor: pointer;
+  }
+  button#start-btn:disabled {
+    background: #e7e0d4;
+    color: #a89e8f;
+    cursor: default;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>어떤 강아지를 키우고 싶으세요?</h1>
+    <p class="sub">고른 견종과 이름은 나중에 트레이 메뉴에서 다시 바꿀 수 있어요.</p>
+    <div class="breed-scroll">
+      <div id="breed-list"></div>
+    </div>
+    <div class="field">
+      <label for="name-input">이름</label>
+      <input id="name-input" type="text" maxlength="12" placeholder="예: 콩이" spellcheck="false" autocorrect="off" autocapitalize="off" />
+    </div>
+    <button id="start-btn" type="button" disabled>시작하기</button>
+  </div>
+  <script src="onboarding-renderer.js"></script>
+</body>
+</html>
