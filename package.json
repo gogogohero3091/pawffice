@@ -28,7 +28,6 @@
     "asarUnpack": [
       "native/scrollwatch"
     ],
-    "afterSign": "build/notarize.js",
     "mac": {
       "target": [
         "dmg",

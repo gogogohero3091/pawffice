@@ -386,31 +386,65 @@ function createSizeWindow() {
   });
 }
 
+// 트레이 아이콘 메뉴 + 캐릭터 우클릭 메뉴가 똑같은 항목을 써야 해서(사용자 요청: "강아지
+// 오른쪽 클릭시 설정/리마인더 메뉴 뜨게") 템플릿을 함수로 빼뒀어요 - 둘 다 이 함수 하나만 보고
+// 만들어서, 메뉴 항목 추가/변경은 여기 한 곳만 고치면 트레이/우클릭 양쪽에 다 반영돼요.
+function buildPetMenuTemplate() {
+  return [
+    { label: '견종/이름 설정 변경', click: () => createOnboardingWindow() },
+    { label: '고정 메시지 설정', click: () => createMessageWindow() },
+    { label: '커스텀 리마인더 설정', click: () => createReminderWindow() },
+    { label: '캐릭터 크기 조정', click: () => createSizeWindow() },
+    { label: '캐릭터 위치 되돌리기', click: () => recenterCharacter() },
+    { type: 'separator' },
+    { label: '후기 보내기', click: () => createReviewWindow() },
+    { label: '기능 제안하기', click: () => createFeatureWindow() },
+    { type: 'separator' },
+    { label: '업데이트 확인', click: () => setupAutoUpdate() },
+    { label: '라이선스 정보', click: () => createLicenseWindow() },
+    { type: 'separator' },
+    { label: '종료', click: () => app.quit() },
+  ];
+}
+
+// 모니터 연결 상태가 바뀌거나(듀얼 모니터 쓰다가 하나 뺌 등), 드래그 중 좌표가 어쩌다
+// 꼬여서 캐릭터가 "화면 어디에도 안 걸치는" 위치로 가버렸을 때 - 트레이/우클릭 메뉴에서
+// 언제든 눌러서 기본 위치(주 모니터 우측 하단)로 강제로 되돌릴 수 있게 하는 비상 탈출구예요.
+function recenterCharacter() {
+  if (!win || win.isDestroyed()) return;
+  const primary = screen.getPrimaryDisplay();
+  const { width, height } = primary.workAreaSize;
+  const bounds = win.getBounds();
+  const x = Math.round(primary.workArea.x + width - bounds.width - 40);
+  const y = Math.round(primary.workArea.y + height - bounds.height - 40);
+  win.setPosition(x, y);
+  currentPos = { x, y };
+  targetPos = { x, y };
+}
+
 function ensureTray() {
   if (tray) return;
   try {
     tray = new Tray(nativeImage.createEmpty());
     if (process.platform === 'darwin') tray.setTitle('🐾');
     tray.setToolTip('내 반려동물');
-    tray.setContextMenu(
-      Menu.buildFromTemplate([
-        { label: '견종/이름 설정 변경', click: () => createOnboardingWindow() },
-        { label: '고정 메시지 설정', click: () => createMessageWindow() },
-        { label: '커스텀 리마인더 설정', click: () => createReminderWindow() },
-        { label: '캐릭터 크기 조정', click: () => createSizeWindow() },
-        { type: 'separator' },
-        { label: '후기 보내기', click: () => createReviewWindow() },
-        { label: '기능 제안하기', click: () => createFeatureWindow() },
-        { type: 'separator' },
-        { label: '업데이트 확인', click: () => setupAutoUpdate() },
-        { label: '라이선스 정보', click: () => createLicenseWindow() },
-        { type: 'separator' },
-        { label: '종료', click: () => app.quit() },
-      ])
-    );
+    tray.setContextMenu(Menu.buildFromTemplate(buildPetMenuTemplate()));
   } catch (e) {
     console.log('[mypet] 트레이 생성 실패(무시 가능):', e.message);
   }
+}
+
+// 창(x,y,w,h)이 현재 연결된 모니터 중 하나와 조금이라도 겹치는지 확인 - 하나도 안 겹치면
+// "어느 화면에도 안 보이는" 상태라는 뜻. 위 tick()의 되돌리기 안전장치 전용.
+function isPositionOnAnyDisplay(x, y, w, h) {
+  const displays = screen.getAllDisplays();
+  for (const d of displays) {
+    const b = d.bounds;
+    if (x + w > b.x && x < b.x + b.width && y + h > b.y && y < b.y + b.height) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // ---- 커서 폴링 + 드래그 물리 루프 (60fps) ----
@@ -475,6 +509,25 @@ function tick() {
 
     const stretchX = targetPos.x - currentPos.x;
     const stretchY = targetPos.y - currentPos.y;
+
+    // (2026-10-23 추가) 듀얼 모니터에서 "캐릭터가 사라졌다"는 제보 대응 - 모니터 두 대를
+    // 배치가 안 맞게(예: 높이가 어긋나게) 놓으면 macOS 전체 화면 좌표계에 "어느 모니터에도
+    // 속하지 않는 빈 공간"이 생길 수 있어요. 드래그 물리 계산 자체는 에러 없이 멀쩡히 돌아가서
+    // (화면 밖 좌표도 숫자 계산으로는 문제없음) 위의 NaN 가드로는 못 잡고, 그냥 조용히 "아무
+    // 데도 안 보이는" 상태가 돼요. 매 프레임 지금 위치가 실제 연결된 모니터 중 하나와 조금이라도
+    // 겹치는지 확인해서, 완전히 벗어났으면 제일 가까운 모니터 쪽으로 즉시 끌어와요.
+    if (!isPositionOnAnyDisplay(currentPos.x, currentPos.y, bounds.width, bounds.height)) {
+      const nearest = screen.getDisplayNearestPoint({
+        x: Math.round(currentPos.x + bounds.width / 2),
+        y: Math.round(currentPos.y + bounds.height / 2),
+      });
+      const nb = nearest.workArea;
+      const safeX = Math.min(Math.max(currentPos.x, nb.x), nb.x + nb.width - bounds.width);
+      const safeY = Math.min(Math.max(currentPos.y, nb.y), nb.y + nb.height - bounds.height);
+      console.log('[mypet] 캐릭터가 모니터 밖으로 나가서 가까운 모니터 안으로 되돌림');
+      currentPos = { x: safeX, y: safeY };
+      targetPos = { x: safeX, y: safeY };
+    }
 
     win.setPosition(Math.round(currentPos.x), Math.round(currentPos.y));
 
@@ -595,6 +648,15 @@ ipcMain.handle('license-activate', async (evt, key) => {
 
 ipcMain.on('license-open-purchase', () => {
   shell.openExternal(PURCHASE_URL);
+});
+
+// 캐릭터 우클릭 -> 트레이 아이콘과 똑같은 메뉴를 캐릭터 바로 그 자리에 띄워요(사용자 요청:
+// "강아지 오른쪽 클릭시 설정, 리마인더 등 메뉴창 뜨게"). 트레이에서만 접근 가능했던 걸
+// 캐릭터에서도 바로 쓸 수 있게 - renderer.js의 contextmenu 리스너 -> preload.js ->
+// 여기로 옴.
+ipcMain.on('show-context-menu', () => {
+  if (!win || win.isDestroyed()) return;
+  Menu.buildFromTemplate(buildPetMenuTemplate()).popup({ window: win });
 });
 
 ipcMain.on('drag-start', (evt, offset) => {

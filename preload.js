@@ -202,4 +202,6 @@ contextBridge.exposeInMainWorld('petAPI', {
   dragStart: (offset) => ipcRenderer.send('drag-start', offset),
   dragEnd: () => ipcRenderer.send('drag-end'),
   setIgnoreMouse: (ignore) => ipcRenderer.send('set-ignore-mouse', ignore),
+  // 캐릭터 우클릭 시 트레이 메뉴와 같은 메뉴를 띄워달라고 메인 프로세스에 요청.
+  showContextMenu: () => ipcRenderer.send('show-context-menu'),
 });

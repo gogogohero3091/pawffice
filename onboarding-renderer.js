@@ -27,13 +27,18 @@ function renderBreedList() {
   });
 }
 
+// (2026-10-23 변경) 이름도 견종이랑 같이 필수로 바꿨어요 - 이전엔 이름 안 써도 시작이
+// 눌렸는데, placeholder("예: 콩이")는 말 그대로 힌트일 뿐 실제 값이 아니라서 빈 이름으로
+// 시작되는 경우가 있었어요(트레이 메뉴 등 여러 군데서 이름을 그대로 보여주는데 비어있으면
+// 어색함). 이름 입력창에 뭔가 쳐야만 "시작" 버튼이 눌리게 함.
 function updateStartEnabled() {
-  startBtn.disabled = !selectedBreed;
+  startBtn.disabled = !selectedBreed || !nameInput.value.trim();
 }
 
 nameInput.value = current.name || '';
 renderBreedList();
 updateStartEnabled();
+nameInput.addEventListener('input', updateStartEnabled);
 
 startBtn.addEventListener('click', () => {
   if (!selectedBreed) return;

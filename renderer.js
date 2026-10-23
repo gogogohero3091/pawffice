@@ -540,6 +540,14 @@ document.addEventListener('mousedown', (e) => {
   window.petAPI && window.petAPI.dragStart({ x: e.clientX, y: e.clientY });
 });
 
+// 캐릭터(실루엣) 위에서 우클릭하면 트레이 아이콘이랑 똑같은 설정/리마인더 메뉴가 뜨게 -
+// 사용자 요청. 실루엣 밖에서는 이 창이 평소 클릭스루라 애초에 이벤트가 안 들어와요.
+document.addEventListener('contextmenu', (e) => {
+  if (!isInsideSilhouette(e.clientX, e.clientY)) return;
+  e.preventDefault();
+  window.petAPI && window.petAPI.showContextMenu();
+});
+
 document.addEventListener('mouseup', () => {
   if (dragging) {
     window.petAPI && window.petAPI.dragEnd();

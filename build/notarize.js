@@ -1,3 +1,11 @@
+// (2026-10-23 수정) 더 이상 안 씀 - package.json의 build.afterSign 설정을 제거했어요.
+// 최신 electron-builder(26.x)는 APPLE_ID/APPLE_APP_SPECIFIC_PASSWORD/APPLE_TEAM_ID 환경변수만
+// 있으면 앱 번들 전체(이제 asarUnpack 안에 들어있는 native/scrollwatch 포함)를 알아서 전부
+// 서명하고 공증까지 자동으로 해줘요. 이 파일이 afterSign 훅으로 계속 걸려있으면, electron-builder가
+// 이미 서명+공증 끝낸 뒤에 scrollwatch를 또 수동으로 재서명해서 "a sealed resource is missing
+// or invalid" 에러로 빌드가 깨졌어요(실제로 한 번 이렇게 실패함, 2026-10-23). 파일은 기록용으로
+// 남겨두지만 package.json에서 더 이상 참조 안 해요.
+
 // build/notarize.js
 //
 // electron-builder의 afterSign 훅이에요 - 서명(codesign)까지 끝난 직후, 앱을 .dmg/.zip으로
